@@ -1,0 +1,6 @@
+#include "RestrictedWeapons.hpp"
+
+RestrictedWeapons::_OnWeaponRestricted_Register __RestrictedWeapons_OnWeaponRestricted_Register = nullptr;
+
+RestrictedWeapons::_OnWeaponRestricted_Unregister __RestrictedWeapons_OnWeaponRestricted_Unregister = nullptr;
+
