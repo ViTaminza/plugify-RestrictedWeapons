@@ -1,0 +1,107 @@
+{
+	"$schema": "https://raw.githubusercontent.com/untrustedmodders/plugify/refs/heads/main/schemas/plugin.schema.json",
+	"version": "${RESTRICTED_WEAPONS_VERSION}",
+	"name": "RestrictedWeapons",
+	"description": "Limits how many players of a team (or of the whole server, depending on the config) may carry a weapon: when the limit of the weapon is exhausted, the next pickup or buy is refused and announced in chat, with the block sound of the config. The limit that applies is the highest 'player count' threshold of restricted_weapons.ini that is <= the current player count. A port of the Metamod:Source plugin 'RestrictedWeapons' by Pisex; the config file restricted_weapons.ini and the translations keep the original layout. Also exports IRWApi (OnWeaponRestricted) for the restricted_weapons_vip module.",
+	"author": "Pisex, ported to Plugify",
+	"website": "https://github.com/untrustedmodders/plugify",
+	"license": "GPL-3.0",
+	"entry": "bin/RestrictedWeapons",
+	"platforms": [],
+	"language": "cpp",
+	"dependencies": [
+		{
+			"name": "s2sdk",
+			"constraints": ">=2.18.2"
+		},
+		{
+			"name": "polyhook",
+			"constraints": ">=2.5.2"
+		},
+		{
+			"name": "hudmenu",
+			"constraints": ">=1.0.0",
+			"optional": true
+		}
+	],
+	"methods": [
+		{
+			"name": "OnWeaponRestricted_Register",
+			"funcName": "OnWeaponRestricted_Register",
+			"group": "callbacks",
+			"description": "Registers the callback the plugin runs when a restriction would block a weapon the player is about to pick up or buy - the IRWApi::HookOnWeaponRestricted of the original (there keyed by PluginId, so one listener per module; registering the same function pointer again replaces/keeps a single entry, and every registered plugin is asked). Return true from the callback to let the weapon through. The restricted_weapons_vip module is the original user of this hook.",
+			"paramTypes": [
+				{
+					"name": "callback",
+					"type": "function",
+					"ref": false,
+					"prototype": {
+						"name": "WeaponRestrictedCallback",
+						"funcName": "WeaponRestrictedCallback",
+						"description": "Called when a restricted weapon is about to be refused; return true to unblock it for this player.",
+						"paramTypes": [
+							{
+								"name": "slot",
+								"type": "int32",
+								"ref": false,
+								"description": "Slot of the player acquiring the weapon."
+							},
+							{
+								"name": "weapon",
+								"type": "string",
+								"ref": false,
+								"description": "Weapon class name, e.g. 'weapon_awp'."
+							}
+						],
+						"retType": {
+							"type": "bool",
+							"description": "true = the weapon is unblocked (only when 'unblock_type' allows it)."
+						}
+					}
+				}
+			],
+			"retType": {
+				"type": "void"
+			}
+		},
+		{
+			"name": "OnWeaponRestricted_Unregister",
+			"funcName": "OnWeaponRestricted_Unregister",
+			"group": "callbacks",
+			"description": "Removes the OnWeaponRestricted listener registered by this plugin. Idempotent.",
+			"paramTypes": [
+				{
+					"name": "callback",
+					"type": "function",
+					"ref": false,
+					"prototype": {
+						"name": "WeaponRestrictedCallback",
+						"funcName": "WeaponRestrictedCallback",
+						"description": "Function to remove.",
+						"paramTypes": [
+							{
+								"name": "slot",
+								"type": "int32",
+								"ref": false,
+								"description": "Slot of the player acquiring the weapon."
+							},
+							{
+								"name": "weapon",
+								"type": "string",
+								"ref": false,
+								"description": "Weapon class name, e.g. 'weapon_awp'."
+							}
+						],
+						"retType": {
+							"type": "bool",
+							"description": "true = the weapon is unblocked."
+						}
+					}
+				}
+			],
+			"retType": {
+				"type": "void"
+			}
+		}
+	]
+}
