@@ -1,0 +1,28 @@
+{
+  // RestrictedWeapons gamedata - s2sdk gamedata format (same schema as the s2sdk plugin's own
+  // gamedata.jsonc), loaded via s2sdk LoadGameConfigFile / GetGameConfigSignature.
+  //
+  // CCSPlayer_ItemServices::CanAcquire is hooked with the polyhook plugin (the Pisex utils plugin
+  // owned this hook via funchook; the port does it itself). The pattern is the "CanAcquire" entry
+  // of the signatures.ini of a Metamod installation, whose comment names the function to search
+  // for.
+  //
+  // Verified against the current game binary's linuxsteamrt64/libserver.so: exactly ONE match of
+  // this pattern in the file, at file offset 0x159DD00 = VA 0x159ED00 (.text starts at file offset
+  // 0x9FEDC0 = VA 0x9FFDC0). The match's prologue - callee-saved register pushes, the item view in
+  // rsi, the limit pointer in rcx, this in rdi and a null-checked pawn load from this+0x38 - is
+  // exactly the prologue the Pisex utils hook wrapped: the hooked function takes the item services,
+  // the item view, the acquire method and the limit pointer.
+  //
+  // Only the linuxsteamrt64 pattern exists (signatures.ini has no win64 one and the
+  // target is Linux).
+  "$schema": "https://raw.githubusercontent.com/untrustedmodders/plugify-plugin-s2sdk/refs/heads/main/schemas/gamedata.schema.json",
+  "csgo": {
+    "Signatures": {
+      "CCSPlayer_ItemServices_CanAcquire": {
+        "library": "server",
+        "linuxsteamrt64": "55 48 89 E5 41 57 41 56 49 89 F6 41 55 41 54 49 89 CC 53 48 89 FB 48 83 EC ? 4C 8B 6F 38"
+      }
+    }
+  }
+}
